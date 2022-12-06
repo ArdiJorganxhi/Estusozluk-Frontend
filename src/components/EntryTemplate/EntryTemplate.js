@@ -4,7 +4,9 @@ import { FaArrowUp } from 'react-icons/fa';
 import { FaArrowDown } from 'react-icons/fa'
 import {IoMdAddCircle} from 'react-icons/io'
 import Popup from '../Popup/Popup';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import RequestService from '../../services/RequestService';
+
 const EntryTemplate = (props) => {
 
   const [openPopup, setOpenPopup] = useState(false)
@@ -22,6 +24,8 @@ const EntryTemplate = (props) => {
 
     
   })
+
+  const navigate = useNavigate()
 
   let token = localStorage.getItem('token')
 
@@ -45,7 +49,7 @@ const EntryTemplate = (props) => {
     e.preventDefault();
 
 
-    axios.post('https://localhost:5001/api/entry/', entryValues, {
+    RequestService.post('/api/entry/', entryValues, {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin' : 'http://localhost:3000/',
@@ -75,7 +79,7 @@ const EntryTemplate = (props) => {
     <div className='entry'>
       <div className='entryTitle'>
         <div className='entryTitleContainer'>
-        <h2>{props.title}</h2>
+        <h2 onClick={() => navigate('/titlePage', {state: {title: props.title}})}>{props.title}</h2>
         <p className='enterEntry' onClick={() => setOpenPopup(!openPopup)}><IoMdAddCircle /></p>
         </div>
         

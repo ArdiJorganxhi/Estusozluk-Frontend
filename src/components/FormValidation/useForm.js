@@ -1,9 +1,8 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
-import { Router } from 'react-router-dom';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {useDispatch} from 'react-redux'
-import {login, logout} from "../features/userSlice"
+import { login } from "../features/userSlice"
+import RequestService from '../../services/RequestService'
 
 const useForm = () => {
 
@@ -89,7 +88,7 @@ const useForm = () => {
     
 
 
-        axios.post("https://localhost:5001/api/User", registerValues, {
+        RequestService.post("/api/User", registerValues, {
             headers: {
                
               'Access-Control-Allow-Origin' : 'http://localhost:3000/',
@@ -99,6 +98,12 @@ const useForm = () => {
           }).then(
             res => {
                 console.log(res);
+
+                if(res.status === 200){
+
+                    alert("Başarıyla kayıt oldunuz!")
+                    navigate('/login')
+                }
             }
         ).catch(
             err => {
@@ -118,7 +123,7 @@ const useForm = () => {
       
 
 
-        await axios.post("https://localhost:5001/api/User/login", loginValues, {
+        await RequestService.post("/api/User/login", loginValues, {
             headers: {
               
               'Access-Control-Allow-Origin' : 'http://localhost:3000/',
@@ -131,13 +136,13 @@ const useForm = () => {
                 localStorage.setItem('token', res.data.token)
                 localStorage.setItem('userId', res.data.userid)
                 localStorage.setItem('username', res.data.username)
+                localStorage.setItem('follower', res.data.followerCount)
+                localStorage.setItem("following", res.data.followedCount)
+                localStorage.setItem("badies", res.data.badieCount)
+
                 
                 let token = localStorage.getItem('token')
-                let username = localStorage.getItem('username')
-                let userid = localStorage.getItem('userId')
-                console.log(token)
-                console.log(username)
-                console.log(userid)
+                console.log(localStorage.getItem("follower"))
 
                 if(token != null){
                     
@@ -148,11 +153,10 @@ const useForm = () => {
                             loggedIn: true
                         })
                     )
+                    alert("Başarıyla giriş yapıldı!")
                     navigate("/profile")
                 }
-                else{
-                    dispatch(logout())
-                }
+                
             }
           ).catch(
             err => {
