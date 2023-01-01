@@ -1,6 +1,8 @@
+import axios from 'axios'
 import React, {useEffect, useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import RequestService from '../../services/RequestService'
+import TitlePageTemplate from '../TitlePageTemplate/TitlePageTemplate'
 import './Aside.css'
 
 const AsideBar = () => {
@@ -13,7 +15,7 @@ const AsideBar = () => {
 
 
 
-        RequestService.get("/api/entry/titles").then(
+        RequestService.get("api/title/titles").then(
             res => {
                 console.log(res)
                 setTitlesArray(res.data)

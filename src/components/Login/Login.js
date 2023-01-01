@@ -2,18 +2,28 @@ import React from 'react'
 import './Login.css'
 import {Link} from 'react-router-dom'
 import useForm from '../FormValidation/useForm'
+import ErrorModal from '../Modals/Error/ErrorModal'
 
-const Login = () => {
+const Login = (props) => {
 
-  const {handleChange, handleLoginSubmit, validateInfo, handleLoginChange, loginValues} = useForm();
+  const {handleChange, handleLoginSubmit, validateInfo, handleLoginChange, loginValues, error, setError} = useForm();
 
   
-
+  const confirm = () => {
+    setError(null);
+  };
 
 
   return (
-    <main>
+    <div className='registerLogin'>
         <form className='registerLoginForm'>
+        {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          confirm={confirm}
+        />
+      )}
       <h2 className='registrationLoginTitle'>oo kimler gelmiş, tekrardan hoş geldin</h2>
      
        <Link to='/register'>
@@ -32,11 +42,11 @@ const Login = () => {
         
         
         <div className='registerLoginButtonField loginPart'>
-          <button className='registerLoginButton' onClick={handleLoginSubmit}>artık resmen hoş geldin !</button>
+          <button className='registerLoginButton' onClick={handleLoginSubmit} >artık resmen hoş geldin !</button>
         </div>
 
       </form>
-    </main>
+    </div>
   )
 }
 

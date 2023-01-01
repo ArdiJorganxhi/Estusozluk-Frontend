@@ -4,6 +4,7 @@
     
 }
 
+
 .entry{
     background-color: rgb(240, 225, 205);
     display: flex;
@@ -27,13 +28,17 @@
 
 .entry .entryTitle{
     display: flex;
-    justify-content: space-around;
+    
     text-align: start;
-    font-size: 1.3rem;
-    text-decoration: underline;
-    margin: 0;
+    font-size: 1.5rem;
+    
+    margin-left: 15px;
     flex-direction: row;
     cursor: pointer;
+}
+
+.entry .entryTitle h2 {
+    text-align: start;
 }
 
 .entry .entryCaption{
