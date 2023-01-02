@@ -22,13 +22,17 @@ const useForm = () => {
 
   const [errors, setErrors] = useState({});
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  let followingArray = [];
+
   const navigate = useNavigate();
 
-  const[error, setError] = useState()
+  const [error, setError] = useState();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,6 +41,31 @@ const useForm = () => {
       ...registerValues,
       [name]: value,
     });
+  };
+
+  const checkEmpty = () => {
+    if (loginValues.username === "" && loginValues.password !== "") {
+      setError({
+        title: "Başarısız işlem",
+        message: "Username boş olamaz",
+      });
+    }
+
+    if (loginValues.username !== "" && loginValues.password === "") {
+      setError({
+        title: "Başarısız işlem",
+        message: "Password boş olamaz",
+      });
+    }
+
+    if (loginValues.username === "" && loginValues.password === "") {
+      setError({
+        title: "Başarısız işlem",
+        message: "Username ve Password boş olamaz",
+      });
+
+      setIsEmpty(true);
+    }
   };
 
   const handleLoginChange = (e) => {
@@ -76,50 +105,51 @@ const useForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    RequestService
-      .post("api/User", registerValues, {
-        headers: {
-          "Access-Control-Allow-Origin": "http://localhost:3000/",
-          "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
-          "Access-Control-Allow-Headers": "Content-Type, x-requested-with",
-        },
-      })
+    RequestService.post("api/User", registerValues, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
+        "Access-Control-Allow-Headers": "Content-Type, x-requested-with",
+      },
+    })
       .then((res) => {
-        console.log(res);
-
         if (res.status === 200) {
-            setError({
-                title: "İşlem başarılı",
-                message: "Başarıyla kayıt oldunuz",
-              });
-          navigate("/login");
+          setError({
+            title: "İşlem başarılı",
+            message: "Başarıyla kayıt oldunuz",
+          });
         }
       })
       .catch((err) => {
-        console.log(err);
+        setError({
+          title: "İşlem başarısız",
+          message: "Bu kullanıcı adına sahip üye var",
+        });
       });
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+
     setIsSubmitting(true);
 
-    await RequestService
-      .post("api/User/login", loginValues, {
-        headers: {
-          "Access-Control-Allow-Origin": "http://localhost:3000/",
-          "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
-          "Access-Control-Allow-Headers": "Content-Type, x-requested-with",
-        },
-      })
+    await RequestService.post("api/User/login", loginValues, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
+        "Access-Control-Allow-Headers": "Content-Type, x-requested-with",
+      },
+    })
       .then((res) => {
-        console.log(res);
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userId", res.data.userid);
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("follower", res.data.followerCount);
         localStorage.setItem("following", res.data.followedCount);
         localStorage.setItem("badies", res.data.badieCount);
+        localStorage.setItem("email", res.data.email);
+
+        followingArray.push(res.data.following);
 
         console.log(localStorage.getItem("follower"));
         let token = localStorage.getItem("token");
@@ -128,7 +158,12 @@ const useForm = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        if (err.response.status === 500) {
+          setError({
+            title: "Başarısız işlem",
+            message: "Yanlış giriş bilgileri",
+          });
+        }
       });
   };
 
@@ -155,6 +190,7 @@ const useForm = () => {
     error,
     setError,
     isLoggedIn,
+    followingArray,
   };
 };
 
